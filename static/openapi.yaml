@@ -1,0 +1,156 @@
+openapi: 3.0.3
+info:
+  title: test-api - OpenAPI 3.0
+  version: 3.0.3
+servers:
+  - url: http://localhost:8000
+paths:
+  /api/v1/entry/{category}/{created_at}:
+    get:
+      tags:
+        - entry
+      parameters:
+        - name: category
+          in: path
+          description: Entry category (primary key in DynamoDB)
+          example: User::SomeRecord
+          required: true
+          schema:
+            type: string
+        - name: created_at
+          in: path
+          description: Return only entries with dates >= UTC timestamp (or part of it)
+          required: true
+          examples:
+            '2024':
+              value: '2024'
+              description: Entries created during or after 2024
+            '2024-02-02':
+              value: '2024-02-02'
+              description: Entries created during or after 2024-02-02
+            2024-03-01 16:04:24.807081041 UTC:
+              value: 2024-03-01 16:04:24.807081041 UTC
+              description: Entries created after 2024-03-01 16:04:24.807081041 UTC
+          schema:
+            type: string
+      summary: Query entries
+      description: Return entries of given *category* with created_at >= UTC *timestamp*
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'
+    delete:
+      tags:
+        - entry
+      parameters:
+        - name: category
+          in: path
+          description: Entry category (Primary Key in DynamoDB)
+          required: true
+          example: User::SomeRecord
+          schema:
+            type: string
+        - name: created_at
+          in: path
+          description: created_at (Sort Key in DynamoDB)
+          required: true
+          example: 2024-03-01 16:04:24.807081041 UTC
+          schema:
+            type: string
+      summary: Delete entry
+      description: Delete single entry by passing category (partition key) and created_at (sort key) as path parameters
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'
+  /api/v1/entry:
+    post:
+      tags:
+        - entry
+      summary: Create a new entry
+      description: Create a new entry
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntryFC'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+        '422':
+          description: 'Failed to deserialize the JSON body into the target type: missing field `rating` at line 1 column 62'
+  /api/v1/entry/scan:
+    get:
+      tags:
+        - entry
+      summary: Scan entries
+      description: Scan last 100 entries in the table
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+components:
+  schemas:
+    Entry:
+      type: object
+      properties:
+        category:
+          type: string
+          example: User::SomeRecord
+        created_at:
+          type: string
+          example: 2024-03-01 16:04:24.807081041 UTC
+        duration_sec:
+          type: integer
+          format: int64
+          example: 42
+        rating:
+          type: integer
+          format: int32
+          example: 4
+        comment:
+          type: string
+          example: You can do better!
+      required:
+        - category
+        - created_at
+        - duration_sec
+        - rating
+    EntryFC:
+      type: object
+      properties:
+        category:
+          type: string
+          example: User::SomeRecord
+        duration_sec:
+          type: integer
+          format: int64
+          example: 42
+        rating:
+          type: integer
+          format: int32
+          example: 4
+        comment:
+          type: string
+          example: You can do better!
+      required:
+        - category
+        - duration_sec
+        - rating
