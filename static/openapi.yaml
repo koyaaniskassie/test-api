@@ -124,6 +124,8 @@ components:
         rating:
           type: integer
           format: int32
+          minimum: 1
+          maximum: 10
           example: 4
         comment:
           type: string
@@ -146,6 +148,8 @@ components:
         rating:
           type: integer
           format: int32
+          minimum: 1
+          maximum: 10
           example: 4
         comment:
           type: string
