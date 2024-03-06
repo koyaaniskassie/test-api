@@ -3,7 +3,6 @@ on:
   push
 env:
   AWS_REGION : "eu-central-1"
-  REPOSITORY: secudoc
 permissions: write-all # change this to granular permissions
   # id-token: write   # This is required for requesting the JWT
   # contents: read    # This is required for actions/checkout
