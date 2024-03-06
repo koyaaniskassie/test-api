@@ -11,7 +11,7 @@ pub async fn create(
     Extension(client): Extension<Client>,
     Json(payload): Json<ModelFC>,
 ) -> Result<(StatusCode, Json<Value>)> {
-    let model = Model::new(payload);
+    let model = Model::new(payload)?;
     let item = to_item(model.clone())?;
 
     let req = client
