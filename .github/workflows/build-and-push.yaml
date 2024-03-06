@@ -23,7 +23,7 @@ jobs:
         run: if [ $? -ne 0 ]; then exit 1; fi
 
   Build_Docker_Image:
-    timeout-minutes: 4
+    timeout-minutes: 7
     needs: Unit_Test
     runs-on: ubuntu-latest
     steps:
